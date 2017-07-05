@@ -40,7 +40,12 @@ app.get("/urls/:id", (req, res) => {
 
 
 app.post("/urls", (req, res) => {
-  console.log(generateRandomString(req));  // debug statement to see POST parameters
+  const newShortURL = generateRandomString(req);
+  // console.log(generateRandomString(req));  // debug statement to see POST parameters
+  const longURL = req.body;
+  // console.log(req.body);
+  urlDatabase[newShortURL] = req.body["longURL"];
+  console.log(urlDatabase);
   res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
