@@ -2,7 +2,11 @@ var express = require("express");
 var app = express();
 var PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
+var cookieParser = require('cookie-parser');
+
+
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 app.set("view engine", "ejs");
 
@@ -26,16 +30,22 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { urls: urlDatabase,
+  userName: req.cookies["username"] };
   res.render("urls_index", templateVars );
 });
 
 app.get("/urls/new", (req, res) => {
+  let templateVars = { shortURL: req.params.id,
+    address: urlDatabase[req.params.id],
+    userName: req.cookies["username"] };
   res.render("urls_new");
 });
 
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id, address: urlDatabase[req.params.id] };
+  let templateVars = { shortURL: req.params.id,
+    address: urlDatabase[req.params.id],
+    userName: req.cookies["username"] };
   res.render("urls_show", templateVars);
 });
 
@@ -50,23 +60,30 @@ app.post("/urls", (req, res) => {
   // console.log(req.body);
   const longURL = req.body;
   urlDatabase[newShortURL] = req.body["longURL"];
-  console.log(urlDatabase);
-  res.redirect("/urls")
+  // console.log(urlDatabase);
+  res.redirect("/urls");
   // res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
-// app.post("/urs/:id"), (req, res) => {
-//   res.redirect("/urls")
-// }
-
 app.post("/urls/:id", (req, res) => {
-  console.log(req.params.id)
+  // console.log(req.params.id)
   urlDatabase[req.params.id] = req.body.longURL;
   res.redirect("/urls")
 });
 
 app.post("/urls/:id/delete", (req, res) => {
   console.log(delete urlDatabase[req.params.id]);
+  res.redirect("/urls")
+});
+
+app.post("/login", (req, res) => {
+  const userName = req.body["username"];
+  res.cookie("username", userName)
+  res.redirect("/urls")
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("username", req.body["username"]);
   res.redirect("/urls")
 });
 

@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <title>TinyApp</title>
-</head>
-<body>
-    <!-- Add your EJS code here -->
-    <%- include("partials/_header") %>
-    <ul>
-      <% for (var shortUrl in urls) { %>
-      <li><%= shortUrl %>: <a href><%= urls[shortUrl] %></a></li>
-      <a href = "/urls/<%= shortUrl %>">Edit</a>
-      <form method="POST" action="/urls/<%= shortUrl %>/delete"><button>Delete</button></form>
-      <% }; %>
-    </ul>
-</body>
+  <head>
+    <title>TinyApp</title>
+  </head>
+  <body>
+      <!-- Add your EJS code here -->
+      <header><% include ./partials/_header %></header>
+      <ul>
+        <% for (var shortUrl in urls) { %>
+        <li><%= shortUrl %>: <a href><%= urls[shortUrl] %></a></li>
+        <a href = "/urls/<%= shortUrl %>">Edit</a>
+        <form method="POST" action="/urls/<%= shortUrl %>/delete"><input type = "submit" value = "Delete"></form>
+        <% }; %>
+      </ul>
+  </body>
 </html>

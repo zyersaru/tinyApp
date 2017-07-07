@@ -4,8 +4,9 @@
     <title><%= shortURL %></title>
   </head>
   <body>
+    <% include ./partials/_header %>
     <%= shortURL %> - <%= address %>
-    <form action="/urls/:id" method="POST" style="margin:150px;">
+    <form action="/urls/<%= shortURL %>" method="POST" style="margin:150px;">
       <label for="longURL"></label>
       <input id="longURL" type="text" name="longURL" placeholder="<%= address %>" style="width: 300px">
       <input type="submit" value="Update">
