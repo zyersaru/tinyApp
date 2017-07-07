@@ -13,17 +13,29 @@ app.set("view engine", "ejs");
 function generateRandomString(req) {
   var random = "";
   var charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  for (var i=0; i < 6; i++) {
+  for (var i = 0; i < 6; i++) {
     random += charset.charAt(Math.floor(Math.random() * 6));
     }
   return random;
 }
-const newShortURL = generateRandomString();
 
 var urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+var users = {
+  "user1" : {
+    id: "user1",
+    email: "user1@example.com",
+    password: "qwer"
+  },
+  "user2" : {
+    id: "user2",
+    email: "user2@example.com",
+    password: "asdf"
+  }
+}
 
 app.get("/", (req, res) => {
   res.end("Hello!");
@@ -42,6 +54,13 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+app.get("/register", (req,res) => {
+  let templateVars = { shortURL: req.params.id,
+    address: urlDatabase[req.params.id],
+    userName: req.cookies["username"] };
+  res.render("urls_register", templateVars);
+});
+
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id,
     address: urlDatabase[req.params.id],
@@ -56,7 +75,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.post("/urls", (req, res) => {
   // console.log(generateRandomString(req));  // debug statement to see POST parameters
-  // const newShortURL = generateRandomString(req);
+  const newShortURL = generateRandomString();
   // console.log(req.body);
   const longURL = req.body;
   urlDatabase[newShortURL] = req.body["longURL"];
@@ -65,16 +84,31 @@ app.post("/urls", (req, res) => {
   // res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
+app.post("/register", (req, res) => {
+  const randUserId = generateRandomString();
+  let email = req.body.email;
+  let password = req.body.password;
+  if (req.body.email === '' || req.body.password === '') {
+    res.status(400).send('Email or password empty')
+  }
+  console.log(randUserId, email, password);
+  res.redirect("/urls")
+})
+
 app.post("/urls/:id", (req, res) => {
   // console.log(req.params.id)
   urlDatabase[req.params.id] = req.body.longURL;
-  res.redirect("/urls")
+  res.redirect("/urls");
 });
 
 app.post("/urls/:id/delete", (req, res) => {
   console.log(delete urlDatabase[req.params.id]);
-  res.redirect("/urls")
+  res.redirect("/urls");
 });
+
+// app.post("/register", (req, res) => {
+//   res.render("/register");
+// })
 
 app.post("/login", (req, res) => {
   const userName = req.body["username"];
@@ -84,7 +118,7 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie("username", req.body["username"]);
-  res.redirect("/urls")
+  res.redirect("/urls");
 });
 
 app.get("/urls.json", (req, res) => {
